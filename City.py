@@ -1,10 +1,12 @@
 import numpy as np
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
+import math
 
 def deriv(y, t, N, beta, gamma):
     S, I, R = y
-    dSdt = -beta * S * I / N
+
+    dSdt = -beta * S * I  / N 
     dIdt = beta * S * I / N - gamma * I
     dRdt = gamma * I
     return dSdt, dIdt, dRdt
@@ -16,10 +18,10 @@ class City:
         self.N = pop
         self.occurrences = occurrences
         self.coords =coords
-        self.airport_closed = False
+        self.airport_opened = True
 
-        self.S = [self.N - I0]
-        self.I = [I0]
+        self.S = [self.N - self.occurrences]
+        self.I = [self.occurrences]
         self.R = [0]
 
     def update(self, cities, beta, gamma, delta_t, t):
@@ -33,6 +35,15 @@ class City:
 
         y0 = self.S[len(self.S) - 1], self.I[len(self.I) - 1], self.R[len(self.R) - 1]
 
+        # cities that host an airport has bigger beta than others
+        if(self.airport_opened and self.occurrences != 0):
+            beta = (self.occurrences / 200) + beta
+
+        for city in cities:
+            if(city.name != self.name):
+                dist = self.calcDistance(city)
+                beta += (city.occurrences / 1E4) * math.exp(- dist)
+
         ret = odeint(deriv, y0, t_inter, args=(self.N, beta, gamma))
         S_temp, I_temp, R_temp = ret.T
 
@@ -41,7 +52,9 @@ class City:
         self.R = np.concatenate([self.R, R_temp[init:]])
 
     def calcDistance(self, city):
-        return np.sqrt((self.coords[0] - city.coords[0])**2 + (self.coords[1] - self.coords[1])**2)
+        dist = np.sqrt((self.coords[0] - city.coords[0])**2 + (self.coords[1] - self.coords[1])**2)
+        # print(dist, self.name, city.name)
+        return dist
 
     def plotData(self):
 
@@ -54,7 +67,7 @@ class City:
         ax.plot(t, self.I/self.N, 'r', alpha=0.5, lw=2, label='Infected')
         ax.plot(t, self.R/self.N, 'g', alpha=0.5, lw=2, label='Recovered with immunity')
         ax.set_xlabel('Time /days')
-        ax.set_ylabel('Number (1000s)')
+        ax.set_ylabel('Normalized Population')
         ax.set_ylim(0, 1.2)
         ax.yaxis.set_tick_params(length=0)
         ax.xaxis.set_tick_params(length=0)
@@ -69,6 +82,8 @@ class City:
     def closeAirport(self):
         airport_closed = True
 
-    
-
-
+    def calcInitData(self, cities):
+        for city in cities:
+            if(self.name != city.name):
+                dist = self.calcDistance(city)
+                self.I[0] += city.occurrences * math.exp(-dist)
