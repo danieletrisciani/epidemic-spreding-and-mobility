@@ -3,6 +3,7 @@ from scipy.integrate import odeint
 import matplotlib.pyplot as plt
 import math
 
+#the function which to solve the differential equation
 def deriv(y, t, N, beta, gamma):
     S, I, R = y
 
@@ -20,9 +21,9 @@ class City:
         self.coords =coords
         self.airport_opened = True
 
-        self.S = [self.N - self.occurrences]
-        self.I = [self.occurrences]
-        self.R = [0]
+        self.S = np.array([self.N - self.occurrences])
+        self.I = np.array([self.occurrences])
+        self.R = np.array([0])
 
     def update(self, cities, beta, gamma, delta_t, t):
 
@@ -51,6 +52,7 @@ class City:
         self.I = np.concatenate([self.I, I_temp[init:]])
         self.R = np.concatenate([self.R, R_temp[init:]])
 
+    #distance from the city, using the euler distance
     def calcDistance(self, city):
         dist = np.sqrt((self.coords[0] - city.coords[0])**2 + (self.coords[1] - self.coords[1])**2)
         # print(dist, self.name, city.name)
@@ -63,6 +65,7 @@ class City:
         # Plot the data on three separate curves for S(t), I(t) and R(t)
         fig = plt.figure(facecolor='w')
         ax = fig.add_subplot(111, facecolor='#dddddd', axisbelow=True)
+        ax.set_title(self.name)
         ax.plot(t, self.S/self.N, 'b', alpha=0.5, lw=2, label='Susceptible')
         ax.plot(t, self.I/self.N, 'r', alpha=0.5, lw=2, label='Infected')
         ax.plot(t, self.R/self.N, 'g', alpha=0.5, lw=2, label='Recovered with immunity')
