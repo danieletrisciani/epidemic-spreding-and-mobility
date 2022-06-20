@@ -3,20 +3,21 @@ import numpy as np
 
 from util import generateDB
 
-fileAlreadyExist = True
+fileAlreadyExist = False
 
 data_folder = "../databases/"
 
 #read and merge of data of population and geographic coordinantes
-popo_df = pd.read_csv(data_folder + "italy_cities.csv", sep='\t', usecols=[0, 1, 7], header=None)
+popo_df = pd.read_csv(data_folder + "italy_cities.csv", sep='\t', usecols=[0, 1, 7], header=None, encoding='latin-1')
 popo_df.columns = ["Code", "Name", "Population"]
 popo_df = popo_df.set_index("Code")
 big_pop_df = popo_df[popo_df['Population'] > 60000]
 
 geo_column = ["Code", "Name", "Longitude", "Latitude"]
-geo_df = pd.read_csv(data_folder + "italy_geo.csv", sep='\t', names=geo_column)
+geo_df = pd.read_csv(data_folder + "italy_geo.csv", sep='\t', names=geo_column, encoding='latin-1')
 geo_df = geo_df.set_index("Code")
 
+#here is created an array that contains all the index to remove, of cities of less than 60000 thousands
 index_to_remove = []
 for index, row in geo_df.iterrows():
     if(not (index in big_pop_df.index)):
@@ -38,8 +39,8 @@ final_df = cities_df.merge(city_occ_df, left_on='Name', right_on='City', how='ou
 final_df = final_df.drop('City', axis=1)
 
 for index, row in final_df.iterrows():
-    if(np.isnan(row['Occurrence'])): 
-        print('ciao')
+    if(np.isnan(row['Occurrence'])):
+        
         final_df.Occurrence[index] = 0
 
 #save the complete database on file
