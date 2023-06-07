@@ -1,7 +1,7 @@
 # Epidemics spreading: modelling & integration with mobility
 
 ## About the project
-This work aims to simulate the spreading of a virus in Italy (considering cities with inhabitants > 60k). Each city is a node on a network and they are all linked to each other with weighted links, the weight is proportional to how much the virus spread to a city to another. At day 0 the only cities infected are the ones with airports. The simulation lasts for a given number of days. Each day the number of infected, recovered and susceptible inhabitants are updated for each city. The model is deterministic and based on the SIR model, described by the following differential equations:
+This work aims to simulate the spreading of a virus in Italy (considering cities with inhabitants > 60k). Each city is a node on a network and they are all linked to each other with weighted links, the weight is proportional to how much the virus spread from a city to another. At day 0 the only cities infected are the ones with airports. The simulation lasts for a given number of days. Each day the number of infected, recovered and susceptible inhabitants are updated for each city. The model is deterministic and based on the SIR model, described by the following differential equations:
 
 $$
 \begin{aligned}
@@ -33,13 +33,13 @@ Previous databases will be used to create a new database to be used in the simul
 
 ## Build with
 The following libraries have been used:
-* [NetworkX](https://networkx.org/) Cities are considered as nodes of a network, each city has a weighted link to all the other cities. This library helps to manage the complex network.
-* [Scipy](https://scipy.org/) Differential equations are solve using the `odeint` equation of the `SciPy` library.
+* [NetworkX](https://networkx.org/). Cities are considered as nodes of a network, each city has a weighted link to all the other cities. This library helps to manage the complex network.
+* [Scipy](https://scipy.org/). Differential equations are solve using the `odeint` equation of the `SciPy` library.
 
 
 ## Usage
 Launch:
-$ python Italy.py
+`$ python Italy.py`
 
 It will create the database and it will start the simulation.
 
